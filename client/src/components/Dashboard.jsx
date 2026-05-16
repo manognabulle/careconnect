@@ -30,7 +30,7 @@ export function Dashboard({ medicines, pharmacies, stock, emergencyRequests, add
         <div className="card">
           <div className="card-header"><div className="card-title">Emergency Requests</div><span className={`tag rx`} style={{ background: "var(--red-light)", color: "var(--red)" }}>Live</span></div>
           <div className="card-body">
-            {emergencyRequests.slice(0, 3).map(er => (
+            {emergencyRequests.map(er => (
               <div key={er.id} className={`em-card ${er.status === "fulfilled" ? "fulfilled" : er.priority}`} style={{ marginBottom: 10 }}>
                 <div className="em-card-inner">
                   <div className={`priority-dot ${er.status === "fulfilled" ? "fulfilled" : er.priority}`} />
@@ -51,7 +51,7 @@ export function Dashboard({ medicines, pharmacies, stock, emergencyRequests, add
             <table className="pharm-table">
               <thead><tr><th>Pharmacy</th><th>Area</th><th>Rating</th></tr></thead>
               <tbody>
-                {pharmacies.slice(0, 4).map(p => (
+                {pharmacies.map(p => (
                   <tr key={p.id}>
                     <td style={{ fontWeight: 500 }}>{p.name}</td>
                     <td style={{ color: "var(--muted)" }}>{p.area}</td>

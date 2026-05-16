@@ -81,12 +81,12 @@ router.post("/login", async (req, res) => {
     }
 
     if (!user) {
-      return res.status(401).json({ error: "Invalid credentials" });
+      return res.status(401).json({ error: "No account found with this email or name." });
     }
 
     const valid = await bcrypt.compare(password, user.password_hash);
     if (!valid) {
-      return res.status(401).json({ error: "Invalid credentials" });
+      return res.status(401).json({ error: "Incorrect password. Please try again." });
     }
 
     const token = jwt.sign(
@@ -113,7 +113,8 @@ router.post("/login", async (req, res) => {
       },
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("[LOGIN ERROR]:", err);
+    res.status(500).json({ error: "Server authentication error: " + err.message });
   }
 });
 

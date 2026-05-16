@@ -236,7 +236,7 @@ export function BookAppointment({ user, doctors, addToast }) {
           <div style={{ marginTop: 40 }}>
             <div className="card-title" style={{ marginBottom: 20, fontSize: '20px' }}>Upcoming Consultations</div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px' }}>
-              {appointments.filter(a => a.status !== 'cancelled').slice(0, 3).map((appointment) => (
+              {appointments.filter(a => a.status !== 'cancelled').map((appointment) => (
                 <div key={appointment.id} className="med-card" style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
                     <div style={{ fontWeight: 700, color: 'var(--navy)' }}>{appointment.doctor_name || 'Specialist'}</div>
@@ -308,10 +308,18 @@ export function BookAppointment({ user, doctors, addToast }) {
                   {availableSlots.length === 0 ? (
                     <div style={{ fontSize: '13px', color: 'var(--red)', padding: '10px', background: 'var(--red-light)', borderRadius: '10px', textAlign: 'center' }}>No slots on this date</div>
                   ) : (
-                    <select className="form-input form-select" defaultValue="" onChange={(e) => e.target.value && handleSlotSelection(viewingDoctor, e.target.value)}>
-                      <option value="">-- Choose Slot --</option>
-                      {availableSlots.map((slot) => <option key={slot} value={slot}>{slot}</option>)}
-                    </select>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '8px' }}>
+                      {availableSlots.map((slot) => (
+                        <button 
+                          key={slot} 
+                          className="btn btn-outline" 
+                          style={{ padding: '8px', fontSize: '12px' }}
+                          onClick={() => handleSlotSelection(viewingDoctor, slot)}
+                        >
+                          {slot}
+                        </button>
+                      ))}
+                    </div>
                   )}
                 </div>
               </div>

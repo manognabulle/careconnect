@@ -53,7 +53,7 @@ app.get("/api/health", (req, res) => {
 
 app.get("/api/doctors", async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM doctors ORDER BY name ASC");
+    const result = await pool.query("SELECT * FROM doctors ORDER BY specialty ASC, rating DESC");
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -468,8 +468,8 @@ app.post(
       }
 
       const reservation = await pool.query(
-        `INSERT INTO reservations (medicine_id, pharmacy_id, quantity, reserved_until)
-         VALUES ($1, $2, $3, NOW() + INTERVAL '30 minutes') RETURNING *`,
+        `INSERT INTO reservations (medicine_id, pharmacy_id, quantity, status, reserved_until)
+         VALUES ($1, $2, $3, 'pending', NOW() + INTERVAL '30 minutes') RETURNING *`,
         [medicine_id, pharmacy_id, quantity]
       );
 
@@ -552,28 +552,12 @@ app.post(
     try {
       const result = await pool.query(
         `
-  INSERT INTO emergency_requests
-  (
-    medicine,
-    patient,
-    medicine_name,
-    patient_name,
-    priority,
-    status,
-    user_email
-  )
-  VALUES ($1, $2, $3, $4, $5, $6, $7)
-  RETURNING *
-  `,
-        [
-          medicine,
-          patient,
-          medicine,
-          patient,
-          priority,
-          "pending",
-          req.user.email
-        ]
+        INSERT INTO emergency_requests 
+        (medicine, patient, medicine_name, patient_name, priority, status, user_email) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7) 
+        RETURNING *
+        `,
+        [medicine, patient, medicine, patient, priority, "pending", req.user.email]
       );
       const requestData = result.rows[0];
 
