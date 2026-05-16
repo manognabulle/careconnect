@@ -1,11 +1,11 @@
-const BASE = 'http://127.0.0.1:5000/api';
+const BASE = `${import.meta.env.VITE_API_URL}/api`;
 
 const authHeaders = () => ({
   'Content-Type': 'application/json',
   Authorization: `Bearer ${localStorage.getItem('token')}`,
 });
 
-export const handleResponse = (r) => 
+export const handleResponse = (r) =>
   r.text().then(text => {
     let data;
     try {
@@ -22,14 +22,18 @@ export const handleResponse = (r) =>
 export const api = {
   BASE,
   login: (email, password) =>
-    fetch(`${BASE}/auth/login`, { method: 'POST',
+    fetch(`${BASE}/auth/login`, {
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }) }).then(handleResponse),
+      body: JSON.stringify({ email, password })
+    }).then(handleResponse),
 
   register: (data) =>
-    fetch(`${BASE}/auth/register`, { method: 'POST',
+    fetch(`${BASE}/auth/register`, {
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data) }).then(handleResponse),
+      body: JSON.stringify(data)
+    }).then(handleResponse),
 
   getMedicines: () =>
     fetch(`${BASE}/medicines`).then(handleResponse),
@@ -44,27 +48,35 @@ export const api = {
     fetch(`${BASE}/doctors`).then(handleResponse),
 
   updateProfile: (id, data) =>
-    fetch(`${BASE}/doctors/${id}`, { method: 'PUT',
-      headers: authHeaders(), body: JSON.stringify(data) }).then(handleResponse),
+    fetch(`${BASE}/doctors/${id}`, {
+      method: 'PUT',
+      headers: authHeaders(), body: JSON.stringify(data)
+    }).then(handleResponse),
 
   getSchedule: (doctorId) =>
     fetch(`${BASE}/doctor-schedule/${doctorId}`).then(handleResponse),
 
   updateSchedule: (doctorId, data) =>
-    fetch(`${BASE}/doctor-schedule/${doctorId}`, { method: 'PUT',
-      headers: authHeaders(), body: JSON.stringify(data) }).then(handleResponse),
+    fetch(`${BASE}/doctor-schedule/${doctorId}`, {
+      method: 'PUT',
+      headers: authHeaders(), body: JSON.stringify(data)
+    }).then(handleResponse),
 
   getAppointments: (filters) =>
     fetch(`${BASE}/appointments?${new URLSearchParams(filters)}`,
       { headers: authHeaders() }).then(handleResponse),
 
   bookAppointment: (data) =>
-    fetch(`${BASE}/appointments`, { method: 'POST',
-      headers: authHeaders(), body: JSON.stringify(data) }).then(handleResponse),
+    fetch(`${BASE}/appointments`, {
+      method: 'POST',
+      headers: authHeaders(), body: JSON.stringify(data)
+    }).then(handleResponse),
 
   updateAppointment: (id, status) =>
-    fetch(`${BASE}/appointments/${id}`, { method: 'PUT',
-      headers: authHeaders(), body: JSON.stringify({ status }) }).then(handleResponse),
+    fetch(`${BASE}/appointments/${id}`, {
+      method: 'PUT',
+      headers: authHeaders(), body: JSON.stringify({ status })
+    }).then(handleResponse),
 
   getPharmacies: () =>
     fetch(`${BASE}/pharmacies`).then(handleResponse),
@@ -73,20 +85,26 @@ export const api = {
     fetch(`${BASE}/stock`).then(handleResponse),
 
   updateStock: (data) =>
-    fetch(`${BASE}/stock`, { method: 'PUT',
-      headers: authHeaders(), body: JSON.stringify(data) }).then(handleResponse),
+    fetch(`${BASE}/stock`, {
+      method: 'PUT',
+      headers: authHeaders(), body: JSON.stringify(data)
+    }).then(handleResponse),
 
   createOrder: (data) =>
-    fetch(`${BASE}/orders`, { method: 'POST',
-      headers: authHeaders(), body: JSON.stringify(data) }).then(handleResponse),
+    fetch(`${BASE}/orders`, {
+      method: 'POST',
+      headers: authHeaders(), body: JSON.stringify(data)
+    }).then(handleResponse),
 
   getOrders: (pharmacyId) =>
     fetch(`${BASE}/orders${pharmacyId ? `?pharmacy_id=${pharmacyId}` : ''}`,
       { headers: authHeaders() }).then(handleResponse),
 
   reserve: (data) =>
-    fetch(`${BASE}/reserve`, { method: 'POST',
-      headers: authHeaders(), body: JSON.stringify(data) }).then(handleResponse),
+    fetch(`${BASE}/reserve`, {
+      method: 'POST',
+      headers: authHeaders(), body: JSON.stringify(data)
+    }).then(handleResponse),
 
   getReservations: (pharmacyId) =>
     fetch(`${BASE}/reservations${pharmacyId ? `?pharmacy_id=${pharmacyId}` : ''}`,
@@ -96,16 +114,22 @@ export const api = {
     fetch(`${BASE}/emergency`, { headers: authHeaders() }).then(handleResponse),
 
   createEmergency: (data) =>
-    fetch(`${BASE}/emergency`, { method: 'POST',
-      headers: authHeaders(), body: JSON.stringify(data) }).then(handleResponse),
+    fetch(`${BASE}/emergency`, {
+      method: 'POST',
+      headers: authHeaders(), body: JSON.stringify(data)
+    }).then(handleResponse),
 
   acceptEmergency: (id) =>
-    fetch(`${BASE}/emergency/${id}/accept`, { method: 'PUT',
-      headers: authHeaders() }).then(handleResponse),
+    fetch(`${BASE}/emergency/${id}/accept`, {
+      method: 'PUT',
+      headers: authHeaders()
+    }).then(handleResponse),
 
   updateEmergency: (id, status, pharmacy_id) =>
-    fetch(`${BASE}/emergency/${id}`, { method: 'PUT',
-      headers: authHeaders(), body: JSON.stringify({ status, pharmacy_id }) }).then(handleResponse),
+    fetch(`${BASE}/emergency/${id}`, {
+      method: 'PUT',
+      headers: authHeaders(), body: JSON.stringify({ status, pharmacy_id })
+    }).then(handleResponse),
 
   uploadPrescription: (file) => {
     const form = new FormData();
