@@ -575,6 +575,7 @@ app.post(
           req.user.email
         ]
       );
+      const requestData = result.rows[0];
 
       req.io.emit("new-emergency-request", requestData);
       res.json({
