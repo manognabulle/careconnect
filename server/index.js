@@ -551,16 +551,30 @@ app.post(
 
     try {
       const result = await pool.query(
-        `INSERT INTO emergency_requests
-(medicine, patient, priority, status)
-         VALUES ($1, $2, $3, 'pending', $4)
-         RETURNING *`,
-        [medicine, patient, priority, req.user.email]
+        `
+  INSERT INTO emergency_requests
+  (
+    medicine,
+    patient,
+    medicine_name,
+    patient_name,
+    priority,
+    status,
+    user_email
+  )
+  VALUES ($1, $2, $3, $4, $5, $6, $7)
+  RETURNING *
+  `,
+        [
+          medicine,
+          patient,
+          medicine,
+          patient,
+          priority,
+          "pending",
+          req.user.email
+        ]
       );
-
-      const requestData = result.rows[0];
-      // Sync medicine/patient columns for compatibility
-      await pool.query("UPDATE emergency_requests SET medicine = $1, patient = $2 WHERE id = $3", [medicine, patient, requestData.id]);
 
       req.io.emit("new-emergency-request", requestData);
       res.json({
