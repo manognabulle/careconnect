@@ -39,13 +39,26 @@ export function BookAppointment({ user, doctors, addToast }) {
   }, [doctors]);
 
   const loadAvailableSlots = async (doctorId, date) => {
-    const dayName = new Date(date).toLocaleDateString('en-US', { weekday: 'short' });
+    const dayMap = {
+      Sunday: "Sun",
+      Monday: "Mon",
+      Tuesday: "Tue",
+      Wednesday: "Wed",
+      Thursday: "Thu",
+      Friday: "Fri",
+      Saturday: "Sat"
+    };
+
     const [scheduleRes, bookedRes] = await Promise.all([
       api.getSchedule(doctorId),
       api.getAppointments({ doctor_id: doctorId, date }),
     ]);
-    const daySchedule = (Array.isArray(scheduleRes) ? scheduleRes : []).find((schedule) => schedule.day === dayName);
+
+    const selectedDay = dayMap[new Date(date).toLocaleDateString("en-US", { weekday: "long" })];
+    const daySchedule = (Array.isArray(scheduleRes) ? scheduleRes : []).find((s) => s.day.trim() === selectedDay.trim());
+    
     if (!daySchedule) return setAvailableSlots([]);
+    
     const bookedTimes = new Set((Array.isArray(bookedRes) ? bookedRes : []).map((appointment) => appointment.time));
     const blocked = new Set(daySchedule.blocked_slots || []);
     
@@ -90,17 +103,26 @@ export function BookAppointment({ user, doctors, addToast }) {
 
     let matchesAvailability = true;
     if (showAvailableOnly) {
-      const dayName = new Date(selectedDate).toLocaleDateString('en-US', { weekday: 'short' });
+      const dayMap = {
+        Sunday: "Sun",
+        Monday: "Mon",
+        Tuesday: "Tue",
+        Wednesday: "Wed",
+        Thursday: "Thu",
+        Friday: "Fri",
+        Saturday: "Sat"
+      };
+      const selectedDay = dayMap[new Date(selectedDate).toLocaleDateString("en-US", { weekday: "long" })];
       const docSchedule = doctorSchedules[doctor.id] || [];
-      const daySchedule = docSchedule.find(s => s.day === dayName);
+      const daySchedule = docSchedule.find(s => s.day.trim() === selectedDay.trim());
       matchesAvailability = daySchedule && (daySchedule.slots || []).length > 0;
     }
 
     return matchesSearch && matchesSpecialty && matchesHospital && matchesMode && matchesFee && matchesAvailability;
   }).sort((a, b) => {
-    if (sortBy === 'rating') return b.rating - a.rating;
-    if (sortBy === 'exp') return b.experience - a.experience;
-    if (sortBy === 'fee') return a.fee - b.fee;
+    if (sortBy === 'rating') return Number(b.rating) - Number(a.rating);
+    if (sortBy === 'exp') return Number(b.experience) - Number(a.experience);
+    if (sortBy === 'fee') return Number(a.fee) - Number(b.fee);
     return 0;
   });
 
@@ -205,6 +227,7 @@ export function BookAppointment({ user, doctors, addToast }) {
                     </div>
                   </div>
                   <div className="tag cat" style={{ marginTop: '6px', display: 'inline-block' }}>{doctor.specialty}</div>
+                  <div style={{ fontSize: '11px', color: 'var(--muted)', marginTop: '4px' }}>Mode: {doctor.consultation_mode || "Online & Offline"}</div>
                 </div>
               </div>
               
@@ -295,10 +318,10 @@ export function BookAppointment({ user, doctors, addToast }) {
                 <div className="form-group">
                   <label className="form-label">Consultation Type</label>
                   <div className="tabs">
-                    {(viewingDoctor.consultation_mode === 'offline' || viewingDoctor.consultation_mode === 'both') && (
+                    {(viewingDoctor.consultation_mode === 'offline' || viewingDoctor.consultation_mode === 'both' || !viewingDoctor.consultation_mode) && (
                       <button className={`tab ${consultType === 'offline' ? 'active' : ''}`} style={{ flex: 1, textAlign: 'center' }} onClick={() => setConsultType('offline')}>In-Person</button>
                     )}
-                    {(viewingDoctor.consultation_mode === 'online' || viewingDoctor.consultation_mode === 'both') && (
+                    {(viewingDoctor.consultation_mode === 'online' || viewingDoctor.consultation_mode === 'both' || !viewingDoctor.consultation_mode) && (
                       <button className={`tab ${consultType === 'online' ? 'active' : ''}`} style={{ flex: 1, textAlign: 'center' }} onClick={() => setConsultType('online')}>Video Consultation</button>
                     )}
                   </div>
@@ -309,16 +332,22 @@ export function BookAppointment({ user, doctors, addToast }) {
                     <div style={{ fontSize: '13px', color: 'var(--red)', padding: '10px', background: 'var(--red-light)', borderRadius: '10px', textAlign: 'center' }}>No slots on this date</div>
                   ) : (
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '8px' }}>
-                      {availableSlots.map((slot) => (
-                        <button 
-                          key={slot} 
-                          className="btn btn-outline" 
-                          style={{ padding: '8px', fontSize: '12px' }}
-                          onClick={() => handleSlotSelection(viewingDoctor, slot)}
-                        >
-                          {slot}
-                        </button>
-                      ))}
+                      {availableSlots.length > 0 ? (
+                        availableSlots.map((slot) => (
+                          <button 
+                            key={slot} 
+                            className="btn slot-btn" 
+                            style={{ padding: '8px', fontSize: '12px' }}
+                            onClick={() => handleSlotSelection(viewingDoctor, slot)}
+                          >
+                            {slot}
+                          </button>
+                        ))
+                      ) : (
+                        <div style={{ fontSize: '12px', color: 'var(--muted)', gridColumn: '1/-1', textAlign: 'center', padding: '10px' }}>
+                          No slots available
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
