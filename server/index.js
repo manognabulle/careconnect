@@ -44,7 +44,7 @@ app.use("/api/auth", require("./routes/auth"));
 app.use("/api/ocr", require("./routes/prescriptions")); // Renamed from prescriptions to ocr to avoid conflict
 
 io.on("connection", (socket) => {
-  socket.on("disconnect", () => {});
+  socket.on("disconnect", () => { });
 });
 
 app.get("/api/health", (req, res) => {
@@ -174,17 +174,16 @@ app.put("/api/appointments/:id", requireAuth, async (req, res) => {
           <div style="padding: 30px;">
             <p>Hi <strong>${appt.patient_name}</strong>,</p>
             <p>Your appointment has been confirmed for <strong>${new Date(appt.date).toLocaleDateString()}</strong> at <strong>${appt.time}</strong>.</p>
-            ${
-              isOnline
-                ? `
+            ${isOnline
+          ? `
               <div style="margin-top: 24px; padding: 20px; background: #f0fdfa; border-radius: 8px; text-align: center;">
                 <p style="margin-bottom: 16px; font-weight: 600;">This is an Online Consultation</p>
                 <a href="${meetLink}" style="background: #0d9488; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Join Video Call</a>
                 <p style="font-size: 12px; color: #666; margin-top: 16px;">Or copy this link: ${meetLink}</p>
               </div>
             `
-                : `<p>Mode: <strong>In-Person (Offline)</strong></p>`
-            }
+          : `<p>Mode: <strong>In-Person (Offline)</strong></p>`
+        }
             <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
               Regards,<br>CareConnect Team
             </div>
@@ -253,7 +252,7 @@ app.get("/api/orders", requireAuth, async (req, res) => {
   try {
     let query = "SELECT * FROM orders ORDER BY created_at DESC";
     let params = [];
-    
+
     // If user is a pharmacy, enforce isolation
     if (req.user.role === "pharmacy") {
       query = "SELECT * FROM orders WHERE pharmacy_id = $1 ORDER BY created_at DESC";
@@ -265,7 +264,7 @@ app.get("/api/orders", requireAuth, async (req, res) => {
         params = [pharmacy_id];
       }
     }
-    
+
     const result = await pool.query(query, params);
     res.json(result.rows);
   } catch (err) {
@@ -507,7 +506,7 @@ app.get("/api/reservations", requireAuth, async (req, res) => {
       JOIN pharmacies p ON r.pharmacy_id = p.id
     `;
     let params = [];
-    
+
     if (req.user.role === "pharmacy") {
       query += " WHERE r.pharmacy_id = $1";
       params = [req.user.pharmacyId];
@@ -518,7 +517,7 @@ app.get("/api/reservations", requireAuth, async (req, res) => {
         params = [pharmacy_id];
       }
     }
-    
+
     query += " ORDER BY r.created_at DESC";
     const result = await pool.query(query, params);
     res.json(result.rows);
@@ -552,7 +551,8 @@ app.post(
 
     try {
       const result = await pool.query(
-        `INSERT INTO emergency_requests (medicine_name, patient_name, priority, status, user_email)
+        `INSERT INTO emergency_requests
+(medicine, patient, priority, status)
          VALUES ($1, $2, $3, 'pending', $4)
          RETURNING *`,
         [medicine, patient, priority, req.user.email]
@@ -578,12 +578,12 @@ app.get("/api/emergency", requireAuth, async (req, res) => {
   try {
     let query = "SELECT * FROM emergency_requests";
     let params = [];
-    
+
     if (req.user.role === "pharmacy") {
       query = "SELECT * FROM emergency_requests WHERE status = 'pending' OR pharmacy_id = $1 OR accepted_by = $1";
       params = [req.user.pharmacyId];
     }
-    
+
     query += " ORDER BY created_at DESC";
     const result = await pool.query(query, params);
     res.json(result.rows);
