@@ -20,9 +20,10 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: allowedOrigins,
-    methods: ["GET", "POST", "PUT"],
-  },
+    origin: true,
+    credentials: true,
+    methods: ["GET", "POST"]
+  }
 });
 
 const validate = (req, res, next) => {
@@ -33,7 +34,11 @@ const validate = (req, res, next) => {
   next();
 };
 
-app.use(cors({ origin: allowedOrigins }));
+app.use(cors({
+  origin: true,
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+}));
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 app.use((req, res, next) => {
