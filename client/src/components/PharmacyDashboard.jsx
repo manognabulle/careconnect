@@ -38,7 +38,7 @@ export function PharmacyDashboard({ user, medicines, pharmacies, stock, setStock
   };
 
   const handleOrder = async (orderId, status) => {
-    const updated = await fetch(`http://localhost:5000/api/orders/${orderId}`, {
+    const updated = await fetch(`https://careconnect-rjfs.onrender.com/api/orders/${orderId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -62,7 +62,7 @@ export function PharmacyDashboard({ user, medicines, pharmacies, stock, setStock
 
   const Countdown = ({ until }) => {
     const [status, setStatus] = useState({ label: 'RESERVED', time: '', color: 'var(--teal)' });
-    
+
     useEffect(() => {
       if (!until || isNaN(new Date(until).getTime())) {
         setStatus({ label: 'EXPIRED', time: '--', color: 'var(--red)' });
@@ -73,7 +73,7 @@ export function PharmacyDashboard({ user, medicines, pharmacies, stock, setStock
         const now = new Date();
         const reservedUntil = new Date(until);
         const bufferUntil = new Date(reservedUntil.getTime() + 5 * 60000);
-        
+
         if (now < reservedUntil) {
           const diff = reservedUntil - now;
           const mins = Math.floor(diff / 60000);
@@ -91,7 +91,7 @@ export function PharmacyDashboard({ user, medicines, pharmacies, stock, setStock
       }, 1000);
       return () => clearInterval(timer);
     }, [until]);
-    
+
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <span style={{ fontWeight: 700, color: status.color, fontSize: 13 }}>{status.label}</span>
@@ -104,10 +104,10 @@ export function PharmacyDashboard({ user, medicines, pharmacies, stock, setStock
 
   return (
     <div className="pharmacy-dashboard-container">
-      <div className="pharmacy-header-card" style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
+      <div className="pharmacy-header-card" style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
         marginBottom: 32,
         padding: '24px 32px',
         background: 'linear-gradient(135deg, var(--navy) 0%, #1e293b 100%)',
@@ -116,13 +116,13 @@ export function PharmacyDashboard({ user, medicines, pharmacies, stock, setStock
         boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-          <div className="pharmacy-logo-large" style={{ 
-            width: 64, 
-            height: 64, 
-            background: 'var(--teal)', 
-            borderRadius: 16, 
-            display: 'flex', 
-            alignItems: 'center', 
+          <div className="pharmacy-logo-large" style={{
+            width: 64,
+            height: 64,
+            background: 'var(--teal)',
+            borderRadius: 16,
+            display: 'flex',
+            alignItems: 'center',
             justifyContent: 'center',
             fontSize: 28,
             fontWeight: 800,
@@ -266,25 +266,25 @@ export function PharmacyDashboard({ user, medicines, pharmacies, stock, setStock
                       <div className="em-info">
                         <div className="em-medicine" style={{ fontWeight: 700, fontSize: 16 }}>{request.medicine_name || request.medicine}</div>
                         <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 4 }}>
-                          Patient: <span style={{ fontWeight: 600, color: 'white' }}>{request.patient_name || request.patient}</span> | 
-                          Priority: <span style={{ fontWeight: 700, textTransform: 'uppercase' }}>{request.priority}</span> | 
+                          Patient: <span style={{ fontWeight: 600, color: 'white' }}>{request.patient_name || request.patient}</span> |
+                          Priority: <span style={{ fontWeight: 700, textTransform: 'uppercase' }}>{request.priority}</span> |
                           Time: {request.time}
                         </div>
                       </div>
                       <div style={{ display: 'flex', gap: 8 }}>
                         {request.status === 'pending' && (
-                          <button 
-                            className="btn btn-danger" 
-                            style={{ fontSize: 11, padding: '8px 16px' }} 
+                          <button
+                            className="btn btn-danger"
+                            style={{ fontSize: 11, padding: '8px 16px' }}
                             onClick={() => api.acceptEmergency(request.id).then(fetchDashboardData)}
                           >
                             Accept & Dispatch
                           </button>
                         )}
                         {request.status === 'accepted' && request.pharmacy_id === pharmacyId && (
-                          <button 
-                            className="btn btn-primary" 
-                            style={{ fontSize: 11, padding: '8px 16px', background: 'var(--green)' }} 
+                          <button
+                            className="btn btn-primary"
+                            style={{ fontSize: 11, padding: '8px 16px', background: 'var(--green)' }}
                             onClick={() => api.updateEmergency(request.id, 'fulfilled', pharmacyId).then(fetchDashboardData)}
                           >
                             Mark Fulfilled

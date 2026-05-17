@@ -566,17 +566,17 @@ function MedicineSearch({ stock, addToast }) {
   const [altModal, setAltModal] = useState(null);
   const [filter, setFilter] = useState("all");
   useEffect(() => {
-   if(query.length === 0){
+    if (query.length === 0) {
       setResults([]);
       return;
-   }
+    }
 
-   fetch(`http://localhost:5000/api/medicines/search?q=${query}`)
-   .then(res => res.json())
-   .then(data => setResults(data))
-   .catch(err => console.log(err));
+    fetch(`https://careconnect-rjfs.onrender.com/api/medicines/search?q=${query}`)
+      .then(res => res.json())
+      .then(data => setResults(data))
+      .catch(err => console.log(err));
 
-}, [query]);
+  }, [query]);
 
 
   return (

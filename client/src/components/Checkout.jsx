@@ -46,7 +46,7 @@ export function Checkout({ user, cart, setCart, addToast, setPage }) {
         }
       }
 
-      await fetch('http://localhost:5000/api/send-email', {
+      await fetch('https://careconnect-rjfs.onrender.com/api/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

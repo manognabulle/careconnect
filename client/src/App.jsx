@@ -26,7 +26,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
-const socket = io('http://localhost:5000');
+const socket = io('https://careconnect-rjfs.onrender.com');
 
 function normalizeUser(user, doctors = []) {
   if (!user) return null;
@@ -76,13 +76,13 @@ export default function CareConnect() {
   useEffect(() => {
     socket.on('new-emergency-request', (newReq) => {
       setEmergencyRequests((prev) => [
-        { 
-          ...newReq, 
-          medicine: newReq.medicine_name || newReq.medicine, 
+        {
+          ...newReq,
+          medicine: newReq.medicine_name || newReq.medicine,
           patient: newReq.patient_name || newReq.patient,
-          time: 'Just now', 
-          priority: newReq.priority || 'high' 
-        }, 
+          time: 'Just now',
+          priority: newReq.priority || 'high'
+        },
         ...prev
       ]);
       if (user?.role === 'pharmacy') {
@@ -90,7 +90,7 @@ export default function CareConnect() {
       }
     });
     socket.on('emergency:update', ({ id, status, pharmacy_id, accepted_by }) => {
-      setEmergencyRequests((prev) => prev.map((request) => 
+      setEmergencyRequests((prev) => prev.map((request) =>
         request.id === Number(id) ? { ...request, status, pharmacy_id: pharmacy_id || accepted_by, accepted_by: accepted_by || pharmacy_id } : request
       ));
     });
@@ -187,7 +187,7 @@ export default function CareConnect() {
     if (!localStorage.getItem(signupKey)) {
       localStorage.setItem(signupKey, 'true');
       try {
-        await fetch('http://localhost:5000/api/send-email', {
+        await fetch('https://careconnect-rjfs.onrender.com/api/send-email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -272,7 +272,7 @@ export default function CareConnect() {
             </div>
             <div style={{ marginTop: 20, padding: 12, background: 'rgba(255,255,255,0.05)', borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                <div className="avatar" style={{ 
+                <div className="avatar" style={{
                   background: user.role === 'pharmacy' ? 'var(--teal)' : user.role === 'doctor' ? 'var(--blue)' : 'var(--navy-light)',
                   width: 36,
                   height: 36,
@@ -349,11 +349,11 @@ export default function CareConnect() {
               <DoctorDashboard user={user} medicines={medicines} doctors={doctors} setDoctors={setDoctors} addToast={addToast} activeTab={page === 'doctordash' ? 'appointments' : page.replace('doc_', '')} />
             )}
           </div>
-          <footer style={{ 
-            padding: '20px 0', 
-            textAlign: 'center', 
-            color: 'var(--muted)', 
-            fontSize: 12, 
+          <footer style={{
+            padding: '20px 0',
+            textAlign: 'center',
+            color: 'var(--muted)',
+            fontSize: 12,
             borderTop: '1px solid var(--border)',
             marginTop: 'auto'
           }}>
