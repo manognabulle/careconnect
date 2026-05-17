@@ -642,7 +642,7 @@ seed().catch(console.error);
 
 ```javascript
 // src/api.js
-const BASE = 'http://localhost:5000/api';
+const BASE ='https://careconnect-rjfs.onrender.com/api';
 
 export const api = {
   getMedicines: (params) => fetch(`${BASE}/medicines?${new URLSearchParams(params)}`).then(r => r.json()),
